@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Mi Control de Peso 🐱</title>
+  
+  <!-- Configuración App iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Mi Peso 🐱">
+  <link rel="apple-touch-icon" href="https://img.icons8.com/emoji/512/cat-face-emoji.png">
+
+  <style>
+    :root {
+      --bg: #fff0f5;
+      --card-bg: #ffffff;
+      --text: #4a2e35;
+      --subtext: #9e6b77;
+      --pink-main: #ff85a2;
+      --pink-dark: #f75c82;
+      --pink-light: #ffe3ec;
+      --pink-border: #ffcad4;
+      --accent-green: #6bc276;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 20px 16px 40px;
+      padding-top: env(safe-area-inset-top, 20px);
+      padding-bottom: env(safe-area-inset-bottom, 20px);
+      max-width: 480px;
+      margin: 0 auto;
+      min-height: 100vh;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--pink-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    /* Target Banner */
+    .target-card {
+      background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+      border-radius: 22px;
+      padding: 20px;
+      text-align: center;
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(247, 92, 130, 0.25);
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .target-card::after {
+      content: "🐾";
+      position: absolute;
+      right: -10px;
+      bottom: -10px;
+      font-size: 80px;
+      opacity: 0.15;
+    }
+
+    .current-label {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+      opacity: 0.9;
+    }
+
+    .current-weight {
+      font-size: 42px;
+      font-weight: 800;
+      margin: 4px 0;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .target-info {
+      font-size: 14px;
+      font-weight: 500;
+      background: rgba(255, 255, 255, 0.3);
+      padding: 6px 14px;
+      border-radius: 20px;
+      display: inline-block;
+      margin-top: 6px;
+      backdrop-filter: blur(4px);
+    }
+
+    /* Progress Bar */
+    .progress-container {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 16px;
+      border: 2px solid var(--pink-border);
+      margin-bottom: 20px;
+    }
+
+    .progress-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--subtext);
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .progress-bar-bg {
+      background: var(--pink-light);
+      height: 16px;
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-bar-fill {
+      background: linear-gradient(90deg, var(--pink-main), var(--pink-dark));
+      height: 100%;
+      width: 0%;
+      border-radius: 10px;
+      transition: width 0.5s ease;
+    }
+
+    /* Input Form */
+    .form-card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 20px;
+      border: 2px solid var(--pink-border);
+      margin-bottom: 24px;
+      box-shadow: 0 4px 12px rgba(255, 133, 162, 0.08);
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--subtext);
+      margin-bottom: 6px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 2px solid var(--pink-border);
+      background: #fff5f8;
+      color: var(--text);
+      font-size: 16px;
+      outline: none;
+      font-weight: 600;
+    }
+
+    input:focus {
+      border-color: var(--pink-main);
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 14px;
+      border-radius: 14px;
+      border: none;
+      background: var(--pink-main);
+      color: white;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(255, 133, 162, 0.4);
+      transition: transform 0.1s, background-color 0.2s;
+    }
+
+    .submit-btn:active {
+      transform: scale(0.98);
+      background: var(--pink-dark);
+    }
+
+    /* History List */
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--pink-dark);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .history-item {
+      background: var(--card-bg);
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid var(--pink-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    }
+
+    .item-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .item-week {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .item-date {
+      font-size: 12px;
+      color: var(--subtext);
+    }
+
+    .item-weight-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .item-weight {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--pink-dark);
+    }
+
+    .delete-btn {
+      background: none;
+      border: none;
+      color: var(--subtext);
+      font-size: 18px;
+      cursor: pointer;
+      padding: 0 4px;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: var(--subtext);
+      padding: 30px 0;
+      font-size: 14px;
+      background: var(--card-bg);
+      border-radius: 16px;
+      border: 2px dashed var(--pink-border);
+    }
+
+    .cat-deco {
+      text-align: center;
+      font-size: 24px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🐱 Registro de Peso 🐱</h1>
+  </header>
+
+  <!-- Tarjeta de Objetivo -->
+  <div class="target-card">
+    <div class="current-label">Último Peso Registrado</div>
+    <div class="current-weight" id="currentWeight">-- kg</div>
+    <div class="target-info">Objetivo: 45.0 kg 🎯</div>
+  </div>
+
+  <!-- Barra de Progreso -->
+  <div class="progress-container">
+    <div class="progress-title">
+      <span>Progreso hacia el objetivo</span>
+      <span id="progressText">0%</span>
+    </div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progressBar"></div>
+    </div>
+  </div>
+
+  <!-- Formulario Registro Semanal -->
+  <div class="form-card">
+    <div class="form-group">
+      <label for="weightInput">Peso esta semana (kg) 🐾</label>
+      <input type="number" id="weightInput" step="0.1" placeholder="Ej. 47.5" inputmode="decimal">
+    </div>
+
+    <button class="submit-btn" onclick="addEntry()">Añadir Peso Semanal 🐱</button>
+  </div>
+
+  <!-- Historial Semanal -->
+  <div class="section-title">
+    <span>🐾 Historial por Semanas</span>
+  </div>
+  
+  <div class="history-list" id="historyList">
+    <!-- Se carga con JS -->
+  </div>
+
+  <div class="cat-deco">🐾 😺 🐾 😸 🐾</div>
+
+  <script>
+    const TARGET_WEIGHT = 45.0;
+    let weightHistory = JSON.parse(localStorage.getItem('cat_weight_data')) || [];
+
+    function addEntry() {
+      const input = document.getElementById('weightInput');
+      const val = parseFloat(input.value);
+
+      if (isNaN(val) || val <= 0) {
+        alert('¡Miau! Introduce un peso válido 🐾');
+        return;
+      }
+
+      const weekNum = weightHistory.length + 1;
+      const newEntry = {
+        id: Date.now(),
+        week: 'Semana ' + weekNum,
+        weight: val,
+        date: new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })
+      };
+
+      weightHistory.unshift(newEntry);
+      saveAndRender();
+      input.value = '';
+    }
+
+    function deleteEntry(id) {
+      weightHistory = weightHistory.filter(e => e.id !== id);
+      // Recalcular nombres de semana tras borrar
+      weightHistory = weightHistory.reverse().map((e, idx) => {
+        e.week = 'Semana ' + (idx + 1);
+        return e;
+      }).reverse();
+
+      saveAndRender();
+    }
+
+    function updateDashboard() {
+      const currentWeightEl = document.getElementById('currentWeight');
+      const progressBar = document.getElementById('progressBar');
+      const progressText = document.getElementById('progressText');
+
+      if (weightHistory.length === 0) {
+        currentWeightEl.innerText = '-- kg';
+        progressBar.style.width = '0%';
+        progressText.innerText = '0%';
+        return;
+      }
+
+      const latestWeight = weightHistory[0].weight;
+      currentWeightEl.innerText = latestWeight.toFixed(1) + ' kg';
+
+      // Lógica de cálculo de progreso
+      // Asumiendo que el primer registro es el inicial
+      const initialWeight = weightHistory[weightHistory.length - 1].weight;
+
+      if (initialWeight === TARGET_WEIGHT) {
+        progressBar.style.width = '100%';
+        progressText.innerText = '100% 🎉';
+        return;
+      }
+
+      let progressPct = 0;
+      if (initialWeight > TARGET_WEIGHT) {
+        // Pérdida de peso hacia 45kg
+        const totalToLose = initialWeight - TARGET_WEIGHT;
+        const lostSoFar = initialWeight - latestWeight;
+        progressPct = Math.min(Math.max((lostSoFar / totalToLose) * 100, 0), 100);
+      } else {
+        // Ganancia de peso hacia 45kg
+        const totalToGain = TARGET_WEIGHT - initialWeight;
+        const gainedSoFar = latestWeight - initialWeight;
+        progressPct = Math.min(Math.max((gainedSoFar / totalToGain) * 100, 0), 100);
+      }
+
+      progressBar.style.width = progressPct.toFixed(0) + '%';
+      progressText.innerText = progressPct.toFixed(0) + '%';
+
+      if (latestWeight === TARGET_WEIGHT) {
+        progressText.innerText = '¡Objetivo conseguido! 🎉🐱';
+      }
+    }
+
+    function renderHistory() {
+      const historyList = document.getElementById('historyList');
+      historyList.innerHTML = '';
+
+      if (weightHistory.length === 0) {
+        historyList.innerHTML = '<div class="empty-state">Aún no hay pesos guardados. ¡Empieza en la Semana 1! 🐾</div>';
+        return;
+      }
+
+      weightHistory.forEach(e => {
+        const item = document.createElement('div');
+        item.className = 'history-item';
+
+        item.innerHTML = `
+          <div class="item-info">
+            <span class="item-week">${e.week}</span>
+            <span class="item-date">${e.date}</span>
+          </div>
+          <div class="item-weight-wrap">
+            <span class="item-weight">${e.weight.toFixed(1)} kg</span>
+            <button class="delete-btn" onclick="deleteEntry(${e.id})">&times;</button>
+          </div>
+        `;
+
+        historyList.appendChild(item);
+      });
+    }
+
+    function saveAndRender() {
+      localStorage.setItem('cat_weight_data', JSON.stringify(weightHistory));
+      updateDashboard();
+      renderHistory();
+    }
+
+    // Inicializar
+    saveAndRender();
+  </script>
+</body>
+</html>
